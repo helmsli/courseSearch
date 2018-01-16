@@ -39,7 +39,7 @@ public class CourseSearchController {
 	@PostMapping(value = "/search")
 	public  ProcessResult searchCourse(@RequestBody SearchRequest searchContent) {
 		try {
-			return searchEByDefaultService.searchCourse(searchContent.getSearchContent(), searchContent);
+			return searchEByDefaultService.searchCourse(searchContent.getKeyword(), searchContent);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
