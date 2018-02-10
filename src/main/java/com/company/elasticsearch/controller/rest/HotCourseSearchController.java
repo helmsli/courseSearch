@@ -11,23 +11,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.elasticsearch.domain.CourseSearch;
+import com.company.elasticsearch.domain.HotCourseRecommend;
+import com.company.elasticsearch.domain.NewCourseRecommend;
 import com.company.elasticsearch.domain.SearchRequest;
 import com.company.elasticsearch.domain.SearchResult;
+import com.company.elasticsearch.repositories.HotCourseRecommSearchRepository;
 import com.company.elasticsearch.service.SearchEByDefaultService;
+import com.company.elasticsearch.service.SearchEByHotCourseService;
+import com.company.elasticsearch.service.SearchEByNewCourseService;
 import com.google.gson.reflect.TypeToken;
 import com.xinwei.nnl.common.domain.ProcessResult;
 import com.xinwei.nnl.common.util.JsonUtil;
 
 @RestController
-@RequestMapping("/courseSearch")
-public class CourseSearchController {
+@RequestMapping("/hotCourseSearch")
+public class HotCourseSearchController {
 	@Autowired
-	private SearchEByDefaultService searchEByDefaultService;
+	private SearchEByHotCourseService searchEByHotCourseService;
 	
 	@PostMapping(value = "/saveCourse")
-	public  ProcessResult saveCourse(@RequestBody CourseSearch courses) {
+	public  ProcessResult saveCourse(@RequestBody HotCourseRecommend courses) {
 		try {
-			searchEByDefaultService.saveCourse(courses);
+			searchEByHotCourseService.saveCourse(courses);
 			return ControllerUtils.getSuccessResponse(null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -39,47 +44,7 @@ public class CourseSearchController {
 	@PostMapping(value = "/search")
 	public  ProcessResult searchCourse(@RequestBody SearchRequest searchContent) {
 		try {
-			return searchEByDefaultService.searchCourse(searchContent.getKeyword(), searchContent);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return ControllerUtils.getFromResponse(e, SearchResult.RESULT_FAILURE, null);
-		}
-	}
-	
-	//hotcourserecommend
-	@PostMapping(value = "/hotcourserecommend")
-	public  ProcessResult hotcourserecommend(@RequestBody SearchRequest searchContent) {
-		try {
-			return searchEByDefaultService.searchCourse(searchContent.getKeyword(), searchContent);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return ControllerUtils.getFromResponse(e, SearchResult.RESULT_FAILURE, null);
-		}
-	}
-	
-	
-	//teacherrecommend
-	@PostMapping(value = "/teacherrecommend")
-	public  ProcessResult teacherrecommend(@RequestBody SearchRequest searchContent) {
-		try {
-			return searchEByDefaultService.searchCourse(searchContent.getKeyword(), searchContent);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return ControllerUtils.getFromResponse(e, SearchResult.RESULT_FAILURE, null);
-		}
-	}
-	
-	
-	@PostMapping(value = "/newcourserecommend")
-	public  ProcessResult newcourserecommend(@RequestBody SearchRequest searchContent) {
-		try {
-			return searchEByDefaultService.searchCourse(searchContent.getKeyword(), searchContent);
+			return searchEByHotCourseService.searchCourse(searchContent.getKeyword(), searchContent);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -91,7 +56,7 @@ public class CourseSearchController {
 	@PostMapping(value = "/queryOnCourse")
 	public  ProcessResult queryOneCourse(@RequestBody String courseId) {
 		try {
-			 CourseSearch courseSearch = searchEByDefaultService.findOne(courseId);
+			HotCourseRecommend courseSearch = searchEByHotCourseService.findOne(courseId);
 			 if(courseSearch!=null)
 			 {
 				 ProcessResult ProcessResult =ControllerUtils.getSuccessResponse(null);
@@ -112,7 +77,7 @@ public class CourseSearchController {
 			java.lang.reflect.Type type = new TypeToken<HashMap<String, String>>() {  
 		       }.getType();  
 		       Map<String, String> updateMaps = JsonUtil.fromJson(updateParameters, type);  
-			 return searchEByDefaultService.updateParameters(courseId, updateMaps);
+			 return searchEByHotCourseService.updateParameters(courseId, updateMaps);
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,0 +1,44 @@
+//查看多有索引
+curl '172.17.0.143:9200/_cat/indices?v'
+
+
+//配置索引
+curl -XPOST http://172.17.0.143:9200/courseindex/courseSearch/_mapping -d'
+{
+"properties":{"category":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"checkCrc":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseAvatar":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseChapter":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseInfo":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"createTime":{"type":"long"},"credit":{"type":"long"},"detail":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"difficultyLevel":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"expireDate":{"type":"long"},"fitPeople":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"id":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"originalPrice":{"type":"float"},"owner":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"partitionId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"priceVer":{"type":"long"},"realPrice":{"type":"float"},"searchKeys":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"sellAmount":{"type":"long"},"status":{"type":"long"},"teacherName":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"title":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"totalRank":{"type":"long"}} 
+}'
+
+//create index
+curl -XPUT http://172.17.0.143:9200/courseindex
+//delete
+curl -XDELETE 'http://172.17.0.143:9200/courseindex'
+//query
+curl -XGET "http://172.17.0.143:9200/courseindex/_mapping"
+
+
+//热门课程
+curl -XPOST http://172.17.0.143:9200/hotcoursecommindex/hotCourseRecommend/_mapping -d'
+{
+"properties":{"category":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"checkCrc":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseAvatar":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseChapter":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseInfo":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"createTime":{"type":"long"},"credit":{"type":"long"},"detail":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"difficultyLevel":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"expireDate":{"type":"long"},"fitPeople":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"id":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"originalPrice":{"type":"float"},"owner":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"partitionId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"priceVer":{"type":"long"},"realPrice":{"type":"float"},"searchKeys":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"sellAmount":{"type":"long"},"status":{"type":"long"},"teacherName":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"title":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"totalRank":{"type":"long"}} 
+}'
+
+//create index
+curl -XPUT http://172.17.0.143:9200/hotcoursecommindex
+//delete
+curl -XDELETE 'http://172.17.0.143:9200/hotcoursecommindex'
+//query
+curl -XGET "http://172.17.0.143:9200/hotcoursecommindex/_mapping"
+
+
+//新课程推荐搜索
+curl -XPOST http://172.17.0.143:9200/newcoursecommindex/newCourseRecommend/_mapping -d'
+{
+"properties":{"category":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"checkCrc":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseAvatar":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseChapter":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseInfo":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"createTime":{"type":"long"},"credit":{"type":"long"},"detail":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"difficultyLevel":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"expireDate":{"type":"long"},"fitPeople":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"id":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"originalPrice":{"type":"float"},"owner":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"partitionId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"priceVer":{"type":"long"},"realPrice":{"type":"float"},"searchKeys":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"sellAmount":{"type":"long"},"status":{"type":"long"},"teacherName":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"title":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"totalRank":{"type":"long"}} 
+}'
+
+//create index
+curl -XPUT http://172.17.0.143:9200/newcoursecommindex
+//delete
+curl -XDELETE 'http://172.17.0.143:9200/newcoursecommindex'
+//query
+curl -XGET "http://172.17.0.143:9200/newcoursecommindex/_mapping"

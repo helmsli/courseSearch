@@ -40,21 +40,25 @@
 	</properties>
 
 	<dependencies>
-	
-        <!-- Spring Boot Elasticsearch 依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-        </dependency>
 
-        <!-- Spring Boot Web 依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-	
-	
-			<!-- aop -->
+		<!-- Spring Boot Elasticsearch 依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Web 依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!-- aop -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
@@ -129,6 +133,13 @@
 			<version>1.0</version>
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/order_db_1.0.10.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com</groupId>
+			<artifactId>tokenSecurity</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/security_rsa_service.jar</systemPath>
 		</dependency>
 
 

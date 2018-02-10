@@ -8,12 +8,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.DocWriteResponse.Result;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.FilterFunctionBuilder;
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,11 +35,11 @@ import com.company.elasticsearch.repositories.CourseSearchRepository;
 import com.company.userOrderPlatform.domain.QueryPageRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 @Service("searchEByDefaultService")
-public class SearchEByDefaultServiceImpl implements SearchEByDefaultService {
+public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,InitializingBean  {
 	 private static final Logger LOGGER = LoggerFactory.getLogger(SearchEByDefaultServiceImpl.class);
-
+	 private String columnFiled[]= {"searchKeys","category","title","courseInfo","teacherName"};
 	 @Autowired  
-	    private ElasticsearchTemplate elasticsearchTemplate; 
+	 private ElasticsearchTemplate elasticsearchTemplate=null; 
 	 
 	@Autowired
 	private CourseSearchRepository courseEByDefaultRepository;
@@ -44,31 +48,71 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService {
 	public String saveCourse(CourseSearch course) {
 		// TODO Auto-generated method stub
 		CourseSearch ret = courseEByDefaultRepository.save(course);
+		
 		return ret.getCourseId();
 	}
 
 	
 	protected ProcessResult searchCourseByArray(String searchContentArray[], QueryPageRequest queryPageRequest) {
 		  
-		Pageable pageable = PageRequest.of(queryPageRequest.getPageNum(), queryPageRequest.getPageSize());
-		  FilterFunctionBuilder[] lists = new FilterFunctionBuilder[5*searchContentArray.length];
-			
+	//	final String filterSpecialCharsQueryString = null;
+		
+		int pageNum = queryPageRequest.getPageNum();
+		if(pageNum>=1)
+		{
+			pageNum=pageNum-1;
+		}
+		//
+		BoolQueryBuilder boolQueryBuilder =QueryBuilders.boolQuery();
+		QueryBuilder queryBuilder= boolQueryBuilder;
+        for(int i=0;i<searchContentArray.length;i++)
+        {
+        	//boolQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i], columnFiled));
+        	for(int j=0;j<columnFiled.length;j++)
+        	{
+        		boolQueryBuilder.should(QueryBuilders.wildcardQuery(columnFiled[j], "*" + searchContentArray[i].trim() + "*"));	
+        	}
+        	
+        }
+		if(searchContentArray.length==0)
+		{
+			queryBuilder = new MatchAllQueryBuilder();
+		}
+		//
+		Pageable pageable = PageRequest.of(pageNum, queryPageRequest.getPageSize());
+		FilterFunctionBuilder[] lists = new FilterFunctionBuilder[1];
+				
+		lists[0]=new FilterFunctionBuilder(queryBuilder,
+                ScoreFunctionBuilders.fieldValueFactorFunction("totalRank"));
+		
+		/*  
+		FilterFunctionBuilder[] lists = new FilterFunctionBuilder[5*searchContentArray.length];
+		
+		  
 		for(int i=0;i<searchContentArray.length;i++)
 		  {
 			 String searchContent = searchContentArray[i];
-		  lists[5*i] = new FilterFunctionBuilder(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("searchKeys", searchContent)),
+			 
+			
+			 
+		  lists[5*i] = new FilterFunctionBuilder(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("searchKeys", searchContent)),
                   ScoreFunctionBuilders.fieldValueFactorFunction("totalRank"));
-		  lists[5*i+1] = new FilterFunctionBuilder(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("category", searchContent)),
+		  lists[5*i+1] = new FilterFunctionBuilder(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("category", searchContent)),
           		ScoreFunctionBuilders.fieldValueFactorFunction("totalRank"));
-		  lists[5*i+2] = new FilterFunctionBuilder(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("title", searchContent)),
+		  lists[5*i+2] = new FilterFunctionBuilder(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", searchContent)),
 	        		ScoreFunctionBuilders.fieldValueFactorFunction("totalRank"));
-		  lists[5*i+3] = new FilterFunctionBuilder(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("courseInfo", searchContent)),
+		  lists[5*i+3] = new FilterFunctionBuilder(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("courseInfo", searchContent)),
 				  ScoreFunctionBuilders.fieldValueFactorFunction("totalRank"));
-		  lists[5*i+4] = new FilterFunctionBuilder(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("teacherName", searchContent)),
+		  lists[5*i+4] = new FilterFunctionBuilder(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("teacherName", searchContent)),
 				  ScoreFunctionBuilders.fieldValueFactorFunction("totalRank"));
 		  }
+		  */
 		  // Function Score Query
-		  FunctionScoreQueryBuilder functionScoreQueryBuilder = new FunctionScoreQueryBuilder(lists);
+		
+		
+        //.mustNot(QueryBuilders.termQuery("message", "nihao"))
+        //.should(QueryBuilders.termQuery("gender", "male"));
+		  FunctionScoreQueryBuilder functionScoreQueryBuilder = new FunctionScoreQueryBuilder(queryBuilder,lists);
 		  /*
 	        FunctionScoreQueryBuilder functionScoreQueryBuilder = QueryBuilders.functionScoreQuery()
 	                .add(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("searchKeys", searchContent)),
@@ -99,7 +143,7 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService {
 	
 	@Override
 	public ProcessResult searchCourse(String searchContent, QueryPageRequest queryPageRequest) {
-		String searchContentArray[] = StringUtils.split(searchContent," ");
+		String searchContentArray[] = StringUtils.split(searchContent.trim()," ");
 		return this.searchCourseByArray(searchContentArray, queryPageRequest);
 	}
 
@@ -158,6 +202,13 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService {
 	    
 	    return processResult;
 
+	}
+
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

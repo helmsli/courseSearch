@@ -6,6 +6,10 @@ public class SearchRequest extends QueryPageRequest {
 	/**
 	 * 用;分割多个分类，用空格在一个分类内主分类和子分类；
 	 */
+	/**
+	 * 客户端应用类型  app/web
+	 */
+	private String appType;
 	private String category;
 	private String keyword;
 	private String fitPeople;
@@ -53,6 +57,12 @@ public class SearchRequest extends QueryPageRequest {
 	}
 	public void setOrderBy(int orderBy) {
 		this.orderBy = orderBy;
+	}
+	public String getAppType() {
+		return appType;
+	}
+	public void setAppType(String appType) {
+		this.appType = appType;
 	}
 	
 }

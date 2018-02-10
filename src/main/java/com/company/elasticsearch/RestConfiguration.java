@@ -1,10 +1,12 @@
 package com.company.elasticsearch;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -26,6 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -57,6 +61,20 @@ public class RestConfiguration {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(clientHttpRequestFactory());
         restTemplate.setErrorHandler(new DefaultResponseErrorHandler());
+        List<HttpMessageConverter<?>> converterList=restTemplate.getMessageConverters();
+        HttpMessageConverter<?> converterTarget = null;
+        for (HttpMessageConverter<?> item : converterList) {
+            if (item.getClass() == StringHttpMessageConverter.class) {
+                converterTarget = item;
+                break;
+            }
+        }
+
+        if (converterTarget != null) {
+            converterList.remove(converterTarget);
+        }
+        HttpMessageConverter<?> converter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+        converterList.add(converter);
         return restTemplate;
     }
     @Bean
