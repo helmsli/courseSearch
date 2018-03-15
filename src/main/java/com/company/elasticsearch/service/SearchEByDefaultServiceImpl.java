@@ -17,6 +17,9 @@ import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.Fil
 import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -209,6 +212,68 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 	public void afterPropertiesSet() throws Exception {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/**
+	 * 将原有的properties + 偏移量 = new value
+	 * @param object
+	 * @param propertyName
+	 * @return
+	 * @throws ProcessResultException
+	 */
+	public static String getNewValue(Object object,String propertyName,String offset) throws ProcessResultException
+	{
+		 BeanWrapper beanWrapper =PropertyAccessorFactory.forBeanPropertyAccess(object);
+    	 Object objectValue = beanWrapper.getPropertyValue(propertyName);
+    	if(objectValue == null)
+    	{
+    		
+    		throw new ProcessResultException(ControllerUtils.getErrorResponse(-1, "parameter " + propertyName + " value is null"));
+    	}
+    	Integer intObject = (Integer)objectValue;
+    	int newValue = intObject.intValue() + Integer.parseInt(offset);
+    	return String.valueOf(newValue);
+    	
+	}
+	
+
+	@Override
+	public ProcessResult plusParameters(String courseId, Map<String, String> updateMaps) {
+		// TODO Auto-generated method stub
+		       CourseSearch courseSearch =this.courseEByDefaultRepository.findById(courseId).get();
+			   IndexRequest indexRequest = new IndexRequest();  
+			    int size = updateMaps.size();
+			    Object[] sourceObject = new Object[size*2];
+			    int sourceIndex = 0;
+			    for (String key : updateMaps.keySet())
+			    {
+			    	sourceObject[2*sourceIndex] = key;
+			    	String newValue;
+					try {
+						newValue = getNewValue(courseSearch,key,updateMaps.get(key));
+					} catch (ProcessResultException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return e.getProcessResult();
+					}
+			    	sourceObject[2*sourceIndex+1] = newValue;
+			    	sourceIndex++;
+			    }
+				indexRequest.source(sourceObject);  
+			    
+			    UpdateQuery updateQuery = new UpdateQueryBuilder().withId(courseId)  
+			            .withClass(CourseSearch.class).withIndexRequest(indexRequest).build();  
+			    // when  
+			    UpdateResponse updateResponse =  elasticsearchTemplate.update(updateQuery);
+			    ProcessResult processResult = ControllerUtils.getErrorResponse(-1, updateResponse.getResult().toString());
+			    if(updateResponse.getResult()==Result.UPDATED)
+			    {
+			    	processResult = ControllerUtils.getSuccessResponse(null);
+			    }
+			    processResult.setResponseInfo(updateResponse);
+			    
+			    return processResult;
+
 	}
 
 }

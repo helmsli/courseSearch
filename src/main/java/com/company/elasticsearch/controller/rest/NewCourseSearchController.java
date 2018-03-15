@@ -3,7 +3,9 @@ package com.company.elasticsearch.controller.rest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +43,12 @@ public class NewCourseSearchController {
 	@PostMapping(value = "/search")
 	public  ProcessResult searchCourse(@RequestBody SearchRequest searchContent) {
 		try {
+			if(StringUtils.isEmpty(searchContent.getKeyword()))
+			{
+				return searchEByNewCourseService.searchCourse("", searchContent);
+					
+			}
+			
 			return searchEByNewCourseService.searchCourse(searchContent.getKeyword(), searchContent);
 			
 		} catch (Exception e) {
@@ -69,7 +77,7 @@ public class NewCourseSearchController {
 	}
 	
 	@PostMapping(value = "/{courseId}/updateCourse")
-	public  ProcessResult queryOneCourse(@PathVariable String courseId,  @RequestBody String updateParameters) {
+	public  ProcessResult updateCourseParams(@PathVariable String courseId,  @RequestBody String updateParameters) {
 		try {
 			java.lang.reflect.Type type = new TypeToken<HashMap<String, String>>() {  
 		       }.getType();  
@@ -81,4 +89,5 @@ public class NewCourseSearchController {
 			return ControllerUtils.getFromResponse(e, SearchResult.RESULT_FAILURE, null);
 		}
 	}
+	
 }

@@ -107,7 +107,21 @@ public class CourseSearchController {
 	}
 	
 	@PostMapping(value = "/{courseId}/updateCourse")
-	public  ProcessResult queryOneCourse(@PathVariable String courseId,  @RequestBody String updateParameters) {
+	public  ProcessResult updateCourse(@PathVariable String courseId,  @RequestBody String updateParameters) {
+		try {
+			java.lang.reflect.Type type = new TypeToken<HashMap<String, String>>() {  
+		       }.getType();  
+		       Map<String, String> updateMaps = JsonUtil.fromJson(updateParameters, type);  
+			 return searchEByDefaultService.updateParameters(courseId, updateMaps);
+			} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, SearchResult.RESULT_FAILURE, null);
+		}
+	}
+	
+	@PostMapping(value = "/{courseId}/plusParams")
+	public  ProcessResult plusParams(@PathVariable String courseId,  @RequestBody String updateParameters) {
 		try {
 			java.lang.reflect.Type type = new TypeToken<HashMap<String, String>>() {  
 		       }.getType();  

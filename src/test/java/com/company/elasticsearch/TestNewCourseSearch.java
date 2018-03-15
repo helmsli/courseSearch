@@ -1,12 +1,15 @@
 package com.company.elasticsearch;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.web.client.RestTemplate;
 
 import com.company.elasticsearch.domain.CourseSearch;
 import com.company.elasticsearch.domain.SearchRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
+import com.xinwei.nnl.common.util.JsonUtil;
 
 public class TestNewCourseSearch {
 	private String baseUrl = "http://www.chunzeacademy.com:8080/newCourseSearch/saveCourse";
@@ -14,11 +17,13 @@ public class TestNewCourseSearch {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		TestNewCourseSearch testNewCourseSearch  =new TestNewCourseSearch();
-		testNewCourseSearch.saveCourseSearch();
-		testNewCourseSearch.searchContent(null);;
+		//CourseSearch courseSearch = testNewCourseSearch.saveCourseSearch();
+		//testNewCourseSearch.searchContent(null);;
+		testNewCourseSearch.updateSellAmount("1234578", 5);
+		testNewCourseSearch.searchContent(null);; 
 	}
 	
-	public void saveCourseSearch()
+	public CourseSearch saveCourseSearch()
 	
 	{
 		String baseUrl = "http://www.chunzeacademy.com:8080/newCourseSearch/saveCourse";
@@ -52,7 +57,7 @@ public class TestNewCourseSearch {
 		baseUrl = "http://www.chunzeacademy.com:8080/newCourseSearch/saveCourse";
 		ProcessResult processResult = restTemplate.postForObject(baseUrl, courseSearch, ProcessResult.class);
 		System.out.println(processResult);
-		
+		return courseSearch;
 	}
 	
 	private void searchContent(String content)
@@ -63,6 +68,18 @@ public class TestNewCourseSearch {
 		searchRequest.setPageNum(1);
 		searchRequest.setPageSize(100);
 		ProcessResult processResult = restTemplate.postForObject(baseUrl, searchRequest, ProcessResult.class);
+		System.out.println(processResult);
+		
+	}
+	
+	
+	private void updateSellAmount(String course,int sellAmount)
+	{
+		String baseUrl = "http://www.chunzeacademy.com:8080/newCourseSearch/"+ course + "/updateCourse";
+		Map<String,String> updateMaps = new HashMap<String,String>();
+		updateMaps.put("sellAmount",String.valueOf(sellAmount));
+		String updateParamStr = JsonUtil.toJson(updateMaps);
+		ProcessResult processResult = restTemplate.postForObject(baseUrl, updateParamStr, ProcessResult.class);
 		System.out.println(processResult);
 		
 	}

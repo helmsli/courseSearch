@@ -27,6 +27,7 @@ import org.springframework.data.elasticsearch.core.query.UpdateQueryBuilder;
 import org.springframework.stereotype.Service;
 
 import com.company.elasticsearch.controller.rest.ControllerUtils;
+import com.company.elasticsearch.domain.CourseSearch;
 import com.company.elasticsearch.domain.HotCourseRecommend;
 import com.company.elasticsearch.repositories.CourseSearchRepository;
 import com.company.elasticsearch.repositories.HotCourseRecommSearchRepository;
@@ -154,5 +155,45 @@ public class SearchEHotCourseServiceImpl implements SearchEByHotCourseService {
 			    
 			    return processResult;
 	}
+
+	@Override
+	public ProcessResult plusParameters(String courseId, Map<String, String> updateMaps) {
+		// TODO Auto-generated method stub
+		       HotCourseRecommend courseSearch =this.courseEByDefaultRepository.findById(courseId).get();
+			   IndexRequest indexRequest = new IndexRequest();  
+			    int size = updateMaps.size();
+			    Object[] sourceObject = new Object[size*2];
+			    int sourceIndex = 0;
+			    for (String key : updateMaps.keySet())
+			    {
+			    	sourceObject[2*sourceIndex] = key;
+			    	String newValue;
+					try {
+						newValue = SearchEByDefaultServiceImpl.getNewValue(courseSearch,key,updateMaps.get(key));
+					} catch (ProcessResultException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return e.getProcessResult();
+					}
+			    	sourceObject[2*sourceIndex+1] = newValue;
+			    	sourceIndex++;
+			    }
+				indexRequest.source(sourceObject);  
+			    
+			    UpdateQuery updateQuery = new UpdateQueryBuilder().withId(courseId)  
+			            .withClass(HotCourseRecommend.class).withIndexRequest(indexRequest).build();  
+			    // when  
+			    UpdateResponse updateResponse =  elasticsearchTemplate.update(updateQuery);
+			    ProcessResult processResult = ControllerUtils.getErrorResponse(-1, updateResponse.getResult().toString());
+			    if(updateResponse.getResult()==Result.UPDATED)
+			    {
+			    	processResult = ControllerUtils.getSuccessResponse(null);
+			    }
+			    processResult.setResponseInfo(updateResponse);
+			    
+			    return processResult;
+
+	}
+
 
 }

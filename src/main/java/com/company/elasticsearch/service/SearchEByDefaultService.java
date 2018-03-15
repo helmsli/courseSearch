@@ -25,4 +25,6 @@ public interface SearchEByDefaultService {
 	ProcessResult updateTotalRank(String courseId,int totalRank);
 	
 	ProcessResult updateParameters(String courseId,Map<String,String> updateMaps);
+	
+	ProcessResult plusParameters(String courseId,Map<String,String> updateMaps);
 }
