@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.company.elasticsearch.domain.CourseSearch;
+import com.company.elasticsearch.domain.SearchRequest;
 import com.company.userOrderPlatform.domain.QueryPageRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
 
@@ -17,7 +18,7 @@ public interface SearchEByDefaultService {
      * @param searchContent
      * @return
      */
-	ProcessResult searchCourse(String searchContent,QueryPageRequest queryPageRequest);
+	ProcessResult searchCourse(String searchContent,SearchRequest queryPageRequest);
 
 	
 	CourseSearch findOne(String courseId);

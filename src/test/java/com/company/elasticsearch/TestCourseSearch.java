@@ -14,7 +14,7 @@ public class TestCourseSearch {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		TestCourseSearch testCourseSearch  =new TestCourseSearch();
-		testCourseSearch.saveCourseSearch();
+		//testCourseSearch.saveCourseSearch();
 		testCourseSearch.searchContent(null);;
 	}
 	
@@ -59,8 +59,12 @@ public class TestCourseSearch {
 	{
 		String baseUrl = "http://www.chunzeacademy.com:8080/courseSearch/search";
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setKeyword("真好");
+		searchRequest.setKeyword("");
+		
 		searchRequest.setPageNum(1);
+		searchRequest.setPriceStart(0);
+		searchRequest.setPriceEnd(0);
+		
 		searchRequest.setPageSize(100);
 		ProcessResult processResult = restTemplate.postForObject(baseUrl, searchRequest, ProcessResult.class);
 		System.out.println(processResult);

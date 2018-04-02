@@ -14,11 +14,32 @@ public class SearchRequest extends QueryPageRequest {
 	private String keyword;
 	private String fitPeople;
 	private String difficultyLevel;
+	
+	public static final int PRICE_NotFREE=0;
+	public static final int PRICE_FREE=1;
+	public static final int PRICE_All=2;
+	
+	private int isFree;
 	/**
 	 * 按照，分割
 	 */
-	private String priceRange;
-    /**
+	private int priceStart=-1;
+	
+	private int priceEnd=-1;
+	
+	public SearchRequest()
+	{
+		this.setPageNum(1);
+		this.setPageSize(100);
+	}
+	
+    public int getIsFree() {
+		return isFree;
+	}
+	public void setIsFree(int isFree) {
+		this.isFree = isFree;
+	}
+	/**
      * 0 --综合 1-好评 2 人气  3 价格
      */
 	private int  orderBy;
@@ -46,11 +67,18 @@ public class SearchRequest extends QueryPageRequest {
 	public void setDifficultyLevel(String difficultyLevel) {
 		this.difficultyLevel = difficultyLevel;
 	}
-	public String getPriceRange() {
-		return priceRange;
+	
+	public int getPriceStart() {
+		return priceStart;
 	}
-	public void setPriceRange(String priceRange) {
-		this.priceRange = priceRange;
+	public void setPriceStart(int priceStart) {
+		this.priceStart = priceStart;
+	}
+	public int getPriceEnd() {
+		return priceEnd;
+	}
+	public void setPriceEnd(int priceEnd) {
+		this.priceEnd = priceEnd;
 	}
 	public int getOrderBy() {
 		return orderBy;

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.company.elasticsearch.controller.rest.ControllerUtils;
 import com.company.elasticsearch.domain.CourseSearch;
+import com.company.elasticsearch.domain.SearchRequest;
 import com.company.elasticsearch.repositories.CourseSearchRepository;
 import com.company.userOrderPlatform.domain.QueryPageRequest;
 import com.xinwei.nnl.common.domain.ProcessResult;
@@ -41,6 +42,8 @@ import com.xinwei.nnl.common.domain.ProcessResult;
 public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,InitializingBean  {
 	 private static final Logger LOGGER = LoggerFactory.getLogger(SearchEByDefaultServiceImpl.class);
 	 private String columnFiled[]= {"searchKeys","category","title","courseInfo","teacherName"};
+	 private Logger logger = LoggerFactory.getLogger(getClass());
+		
 	 @Autowired  
 	 private ElasticsearchTemplate elasticsearchTemplate=null; 
 	 
@@ -56,7 +59,7 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 	}
 
 	
-	protected ProcessResult searchCourseByArray(String searchContentArray[], QueryPageRequest queryPageRequest) {
+	protected ProcessResult searchCourseByArray(String searchContentArray[], SearchRequest queryPageRequest,String queryColumnFiled[]) {
 		  
 	//	final String filterSpecialCharsQueryString = null;
 		
@@ -65,22 +68,60 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 		{
 			pageNum=pageNum-1;
 		}
-		//
+		//构造查询条件
 		BoolQueryBuilder boolQueryBuilder =QueryBuilders.boolQuery();
 		QueryBuilder queryBuilder= boolQueryBuilder;
-        for(int i=0;i<searchContentArray.length;i++)
-        {
-        	//boolQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i], columnFiled));
-        	for(int j=0;j<columnFiled.length;j++)
-        	{
-        		boolQueryBuilder.should(QueryBuilders.wildcardQuery(columnFiled[j], "*" + searchContentArray[i].trim() + "*"));	
-        	}
-        	
-        }
-		if(searchContentArray.length==0)
+        boolean isMatchQuery = false;
+		
+		if(searchContentArray.length>0)
 		{
-			queryBuilder = new MatchAllQueryBuilder();
+			for(int i=0;i<searchContentArray.length;i++)
+	        {
+	        	//boolQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i], columnFiled));
+	        	for(int j=0;j<queryColumnFiled.length;j++)
+	        	{
+	        		boolQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i].trim() + "*"));	
+	        		isMatchQuery = true;
+	        	}
+	        		
+	        	
+	        }
 		}
+		//
+		
+		if(!StringUtils.isEmpty(queryPageRequest.getCategory()))
+        {
+			logger.debug("category query:" + queryPageRequest.getCategory());
+    		boolQueryBuilder.must(QueryBuilders.wildcardQuery("category", "*" + queryPageRequest.getCategory() + "*"));	
+    		isMatchQuery = true;
+        }
+		if(queryPageRequest.getIsFree()==queryPageRequest.PRICE_FREE)
+		{
+			logger.debug("query by free");
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("realPrice").gte(0).lte(0));
+			isMatchQuery = true;
+		}
+		else if(queryPageRequest.getIsFree()==queryPageRequest.PRICE_NotFREE)
+		{
+			logger.debug("query by Nofree");
+			boolQueryBuilder.must(QueryBuilders.rangeQuery("realPrice").gt(0));
+			isMatchQuery = true;
+		}
+		
+		if(queryPageRequest.getPriceStart()>=0&& queryPageRequest.getPriceStart()<=queryPageRequest.getPriceEnd())
+        {
+        	logger.debug("query by price:" + queryPageRequest.getPriceStart() + ":" + queryPageRequest.getPriceEnd());
+        	boolQueryBuilder.must(QueryBuilders.rangeQuery("realPrice").gte(queryPageRequest.getPriceStart()).lte(queryPageRequest.getPriceEnd()));
+        	isMatchQuery = true;
+        } 
+        if(!isMatchQuery)
+        {
+    		queryBuilder = new MatchAllQueryBuilder();
+    		
+        }
+        
+        
+		
 		//
 		Pageable pageable = PageRequest.of(pageNum, queryPageRequest.getPageSize());
 		FilterFunctionBuilder[] lists = new FilterFunctionBuilder[1];
@@ -145,9 +186,9 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
  
 	
 	@Override
-	public ProcessResult searchCourse(String searchContent, QueryPageRequest queryPageRequest) {
+	public ProcessResult searchCourse(String searchContent, SearchRequest queryPageRequest) {
 		String searchContentArray[] = StringUtils.split(searchContent.trim()," ");
-		return this.searchCourseByArray(searchContentArray, queryPageRequest);
+		return this.searchCourseByArray(searchContentArray, queryPageRequest,this.columnFiled);
 	}
 
 	@Override
