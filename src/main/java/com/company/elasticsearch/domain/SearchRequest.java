@@ -19,7 +19,7 @@ public class SearchRequest extends QueryPageRequest {
 	public static final int PRICE_FREE=1;
 	public static final int PRICE_All=2;
 	
-	private int isFree;
+	private int isFree=PRICE_All;
 	/**
 	 * 按照，分割
 	 */
