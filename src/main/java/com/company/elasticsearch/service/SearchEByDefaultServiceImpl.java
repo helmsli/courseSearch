@@ -71,21 +71,25 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 		//构造查询条件
 		BoolQueryBuilder boolQueryBuilder =QueryBuilders.boolQuery();
 		QueryBuilder queryBuilder= boolQueryBuilder;
+		
         boolean isMatchQuery = false;
 		
 		if(searchContentArray.length>0)
 		{
+			BoolQueryBuilder contentQueryBuilder =QueryBuilders.boolQuery();
 			for(int i=0;i<searchContentArray.length;i++)
 	        {
 	        	//boolQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i], columnFiled));
 	        	for(int j=0;j<queryColumnFiled.length;j++)
 	        	{
-	        		boolQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i].trim() + "*"));	
+	        		logger.debug("query content:" + queryColumnFiled[j] + ":" + "*" + searchContentArray[i].trim() + "*");
+	        		contentQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i].trim() + "*"));	
 	        		isMatchQuery = true;
 	        	}
 	        		
 	        	
 	        }
+			boolQueryBuilder.must(contentQueryBuilder);
 		}
 		//
 		
