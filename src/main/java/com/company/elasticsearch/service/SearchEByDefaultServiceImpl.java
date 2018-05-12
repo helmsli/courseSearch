@@ -53,6 +53,8 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 	@Override
 	public String saveCourse(CourseSearch course) {
 		// TODO Auto-generated method stub
+		//格式化搜索内容为小写
+		course.format();
 		CourseSearch ret = courseEByDefaultRepository.save(course);
 		
 		return ret.getCourseId();
@@ -83,7 +85,7 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 	        	for(int j=0;j<queryColumnFiled.length;j++)
 	        	{
 	        		logger.debug("query content:" + queryColumnFiled[j] + ":" + "*" + searchContentArray[i].trim() + "*");
-	        		contentQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i].trim() + "*"));	
+	        		contentQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i].toLowerCase().trim() + "*"));	
 	        		isMatchQuery = true;
 	        	}
 	        		
@@ -319,6 +321,14 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 			    
 			    return processResult;
 
+	}
+
+
+	@Override
+	public boolean delCourse(CourseSearch course) {
+		// TODO Auto-generated method stub
+		courseEByDefaultRepository.deleteById(course.getCourseId());
+		return true;
 	}
 
 }

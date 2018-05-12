@@ -3,8 +3,10 @@ package com.company.elasticsearch.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.util.StringUtils;
+
+import com.xinwei.nnl.common.util.JsonUtil;
 
 public class CourseSearchBase implements Serializable {
 private String id;
@@ -122,10 +124,9 @@ private String id;
 	}
 
 	public void setTitle(String title) {
+		
 		this.title = title;
 	}
-
-	
 
 	public String getCourseInfo() {
 		return courseInfo;
@@ -329,6 +330,26 @@ private String id;
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public void format()
+	{
+		this.setDetail(JsonUtil.toJson(this));
+		this.setSearchKeys(this.formatLower(this.getSearchKeys()));
+		this.setCategory(formatLower(this.getCategory()));
+		this.setTitle(formatLower(this.getTitle()));
+		this.setCourseInfo(formatLower(this.getCourseInfo()));
+		this.setTeacherName(formatLower(this.getTeacherName()));
+
+	}
+	public String formatLower(String source)
+	{
+		if(StringUtils.isEmpty(source))
+		{
+			return null;
+		}
+		return StringUtils.lowerCase(source);
+	}
+	
 	@Override
 	public String toString() {
 		return "CourseSearch [id=" + id + ", sellAmount=" + sellAmount + ", totalRank=" + totalRank + ", credit="

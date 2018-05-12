@@ -36,10 +36,23 @@ public class CourseSearchController {
 		}
 	}
 	
+	@PostMapping(value = "/deleteCourse")
+	public  ProcessResult delCourse(@RequestBody CourseSearch courses) {
+		try {
+			searchEByDefaultService.delCourse(courses);
+			return ControllerUtils.getSuccessResponse(null);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return ControllerUtils.getFromResponse(e, SearchResult.RESULT_FAILURE, null);
+		}
+	}
+	
+	
 	@PostMapping(value = "/search")
 	public  ProcessResult searchCourse(@RequestBody SearchRequest searchContent) {
 		try {
-			return searchEByDefaultService.searchCourse(searchContent.getKeyword(), searchContent);
+			return searchEByDefaultService.searchCourse(searchContent.getKeyword().toLowerCase(), searchContent);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

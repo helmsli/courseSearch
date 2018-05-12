@@ -10,6 +10,8 @@ import com.xinwei.nnl.common.domain.ProcessResult;
 
 public interface SearchEByDefaultService {
 	String saveCourse(CourseSearch course);
+	
+	boolean delCourse(CourseSearch course);
 	/**
      * 根据关键词，function score query 权重分分页查询
      *
