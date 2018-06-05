@@ -1,0 +1,20 @@
+1.按照条件查询
+curl -XPOST 'http://172.17.0.143:9200/courseindex//_search' -d '
+{
+  "query":{ 
+	"bool":{
+		"should":[
+			{ "match": { "searchKeys": "软件测试" } },
+			{ "match": { "title": "软件测试" } },
+			{ "match": { "courseInfo": "软件测试" } },
+			{ "match": { "teacherName": "软件测试" } },			
+			{ "match": { "category": "软件测试" } }
+			
+		]
+	}
+  }
+}'
+
+2.测试分词效果
+http://47.93.237.188:9200/courseindex/_analyze?analyzer=ik_max_word&text='测试效果'
+
