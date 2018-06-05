@@ -86,7 +86,7 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 	        	//boolQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i], columnFiled));
 	        	//for(int j=0;j<queryColumnFiled.length;j++)
 	        	{
-	        		logger.debug("query content:" + queryColumnFiled[0] + ":" + "*" + searchContentArray[i].trim() + "*");
+	        		logger.debug("query content:"  + ":" + "*" + searchContentArray[i].trim() + "*");
 	        		//contentQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i] + "*"));	
 	          		contentQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i],queryColumnFiled));	
 	          		
