@@ -1,12 +1,29 @@
 //查看多有索引
 curl '172.17.0.143:9200/_cat/indices?v'
-
+//http://47.93.237.188:9200/courseindex/_analyze?analyzer=ik_max_word&text=软件测试
 
 //配置索引
 curl -XPOST http://172.17.0.143:9200/courseindex/courseSearch/_mapping -d'
 {
 "properties":{"category":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"checkCrc":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseAvatar":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseChapter":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"courseInfo":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"createTime":{"type":"long"},"credit":{"type":"long"},"detail":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"difficultyLevel":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"expireDate":{"type":"long"},"fitPeople":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"id":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"originalPrice":{"type":"float"},"owner":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"partitionId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"priceVer":{"type":"long"},"realPrice":{"type":"float"},"searchKeys":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"sellAmount":{"type":"long"},"status":{"type":"long"},"teacherName":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"title":{"type":"text","analyzer":"ik_smart","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"totalRank":{"type":"long"}} 
 }'
+
+// "search_analyzer": "ik_max_word"
+/**
+修改mapping
+curl -XPOST "http://127.0.0.1:9200/productindex/product/_mapping?pretty" -d '{
+     "product": {
+                "properties": {
+                     "amount":{
+                        "type":"integer"
+                   }
+                }
+            }
+    }'
+{
+  "acknowledged" : true
+}
+**/
 
 //create index
 curl -XPUT http://172.17.0.143:9200/courseindex
@@ -42,3 +59,22 @@ curl -XPUT http://172.17.0.143:9200/newcoursecommindex
 curl -XDELETE 'http://172.17.0.143:9200/newcoursecommindex'
 //query
 curl -XGET "http://172.17.0.143:9200/newcoursecommindex/_mapping"
+/**
+修改mapping
+curl -XPOST "http://172.17.0.143:9200/newcoursecommindex/newCourseRecommend/_mapping" -d '{
+     "product": {
+                "properties": {
+                     "amount":{
+                        "type":"integer"
+                   }
+                }
+            }
+    }'
+{
+  "acknowledged" : true
+}
+**/
+
+
+//测试分词器的效果
+http://47.93.237.188:9200/newcoursecommindex/_analyze?analyzer=ik_smart&text=软件测试

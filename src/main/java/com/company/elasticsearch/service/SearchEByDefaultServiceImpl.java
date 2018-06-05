@@ -42,6 +42,8 @@ import com.xinwei.nnl.common.domain.ProcessResult;
 public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,InitializingBean  {
 	 private static final Logger LOGGER = LoggerFactory.getLogger(SearchEByDefaultServiceImpl.class);
 	 private String columnFiled[]= {"searchKeys","category","title","courseInfo","teacherName"};
+	 //private String columnFiled[]= {"searchKeys"};
+	 
 	 private Logger logger = LoggerFactory.getLogger(getClass());
 		
 	 @Autowired  
@@ -82,10 +84,13 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 			for(int i=0;i<searchContentArray.length;i++)
 	        {
 	        	//boolQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i], columnFiled));
-	        	for(int j=0;j<queryColumnFiled.length;j++)
+	        	//for(int j=0;j<queryColumnFiled.length;j++)
 	        	{
-	        		logger.debug("query content:" + queryColumnFiled[j] + ":" + "*" + searchContentArray[i].trim() + "*");
-	        		contentQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i].toLowerCase().trim() + "*"));	
+	        		logger.debug("query content:" + queryColumnFiled[0] + ":" + "*" + searchContentArray[i].trim() + "*");
+	        		//contentQueryBuilder.should(QueryBuilders.wildcardQuery(queryColumnFiled[j], "*" + searchContentArray[i] + "*"));	
+	          		contentQueryBuilder.should(QueryBuilders.multiMatchQuery(searchContentArray[i],queryColumnFiled));	
+	          		
+	      	      
 	        		isMatchQuery = true;
 	        	}
 	        		
@@ -178,7 +183,7 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 */
 	        // 创建搜索 DSL 查询
 	        SearchQuery searchQuery = new NativeSearchQueryBuilder()
-	                .withPageable(pageable)
+	                .withPageable(pageable)	              
 	                .withQuery(functionScoreQueryBuilder).build();
 
 	        //LOGGER.info("\n searchCity(): searchContent [" + searchContent + "] \n DSL  = \n " + searchQuery.getQuery().toString());
@@ -193,7 +198,9 @@ public class SearchEByDefaultServiceImpl implements SearchEByDefaultService,Init
 	
 	@Override
 	public ProcessResult searchCourse(String searchContent, SearchRequest queryPageRequest) {
-		String searchContentArray[] = StringUtils.split(searchContent.trim()," ");
+		//String searchContentArray = StringUtils.split(searchContent.trim()," ");
+		String searchContentArray[] = new String[1];
+		searchContentArray[0] = searchContent.trim().toLowerCase();
 		return this.searchCourseByArray(searchContentArray, queryPageRequest,this.columnFiled);
 	}
 
